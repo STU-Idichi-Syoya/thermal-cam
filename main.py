@@ -1,3 +1,4 @@
+from logging import Logger
 import cv2,numpy as np
 
 CAS_PATH="weights/haarcascade_frontalface_default.xml"
@@ -14,31 +15,48 @@ OK_IMG_PATH=""
 WARN_IMG_MAT=cv2.imread(WARN_IMG_PATH)
 OK_IMG_MAT=cv2.imread(OK_IMG_PATH)
 
-class face_rec:
-    def __init__(self) -> None:
-        self.face_rec=cv2.CascadeClassifier(casfile)
 
+DEBUG_CAM="http://192.168.0.14:4747/video"
+
+
+import logging
+logger=logging.getLogger("thrmal-cam-project")
+logger.setLevel(20)
+formatter = logging.Formatter('%(asctime)s:%(lineno)d:%(levelname)s:%(module)s:%(name)s:%(message)s')
+
+
+sh=logging.StreamHandler()
+sh.setFormatter(formatter)
+logger.addHandler(sh)
+
+class face_rec:
+    def __init__(self,cas_path=CAS_PATH) -> None:
+        self.face_rec=cv2.CascadeClassifier(cas_path)
+        logger.info("cas_file load ok")
     def rec(self,F)->[()]:
         face=self.face_rec.detectMultiScale(F,minNeighbors=CAS_minNeighbors)
 
         return face
-import threading
+import threading,time
 
 class Pi_CAM:
     def __init__(self) -> None:
-        pass
+        
+        self.v=cv2.VideoCapture(DEBUG_CAM)
     def read(self)->np.ndarray:
-        # return 
+        _,F=self.v.read()
 
 class thrmal_cam(threading.Thread):
     # サーマルカメラ初期設定
     def __init__(self) -> None:
-        super(threading.Thread).__init__()
+        super(thrmal_cam,self).__init__()
 
     #サーマル　測定開始
     def run(self):
         # self.result=に格納
-        pass
+        #todo
+        self.result=None
+        time.sleep(1)
     ## 8x8 行列
     def get_result(self)-> np.ndarray:
         return self.result
@@ -46,7 +64,7 @@ class thrmal_cam(threading.Thread):
 
 class show_server(threading.Thread):
     def __init__(self,Queue=None,wait_video_path=wait_video_path,FPS=MAIN_SCREEN_FPS) -> None:
-        super(threading.Thread).__init__()
+        super(show_server,self).__init__()
         self.wait_v=cv2.VideoCapture(wait_video_path)
         self.queue=Queue
 
@@ -86,11 +104,11 @@ class screen:
         self._SCQueue=queue.Queue(maxsize=SCREEN_BUF)
         self._screen=show_server(self._SCQueue,)
         self._screen.start()
-    def show_any_IMG(F:np.ndarray,sec=RESULT_SHOW_TIME):
+    def show_any_IMG(self,F:np.ndarray,sec=RESULT_SHOW_TIME):
 
         self._SCQueue.put([F,sec])
 
-    def show_wait_video():
+    def show_wait_video(self):
         pass
 
 ## 体温を8x8行列から検出
