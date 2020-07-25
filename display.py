@@ -4,7 +4,7 @@ import threading
 
 import numpy as np
 
-from main import logger, WAIT_VIDEO_PATH
+from main import logger, WAIT_VIDEO_PATH, RESULT_SHOW_TIME
 
 
 def show_f(v_path, q: mlp.Queue, FPS=30):
@@ -55,7 +55,7 @@ class screen:
 
         self.sc.start()
 
-    def show_any_IMG(self, F: np.ndarray, sec=1):
+    def show_any_IMG(self, F: np.ndarray, sec=RESULT_SHOW_TIME):
 
         self._SCQueue.put([F, sec])
 
